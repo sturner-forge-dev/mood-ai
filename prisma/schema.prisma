@@ -15,7 +15,7 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -25,17 +25,17 @@ model User {
 }
 
 model JournalEntry {
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   userId String
   user   User   @relation(fields: [userId], references: [id])
 
-  content  String     @db.Text
-  Analysis Analysis[]
+  content  String    @db.Text
+  analysis Analysis?
 
-  @@index([userId])
+  @@unique([userId, id])
 }
 
 model Analysis {
@@ -44,7 +44,13 @@ model Analysis {
   updatedAt DateTime @updatedAt
 
   entryId String
-  entry   JournalEntry @relation(fields: [entryId], references: [id])
+  entry   JournalEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
+
+  mood      String   @db.Text
+  summary   String   @db.Text
+  color     String
+  negative  Boolean
+  subject   String
 
   @@unique([entryId])
 }
